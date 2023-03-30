@@ -38,11 +38,6 @@ public class RouteController {
    
    @Autowired RouteService routeService;
    
-//   @RequestMapping(value="/routeWrite")
-//   public String main() {
-//      return "routeWrite";
-//   }
-   
    @RequestMapping(value="/routeSearchPopup1")
    public String routeInfoList1() {
       return "routeSearchPopup1";
@@ -71,16 +66,6 @@ public class RouteController {
    public String routeInfoList7() {
       return "routeSearchPopup7";
    }
-   
-//   @RequestMapping(value="/routeList2")
-//   public String routeList2(Model model) {
-//      
-//      String page = "여행지경로";
-//      model.addAttribute("page", page);
-//      
-//      return "main";
-//   }
-   
    
    @RequestMapping(value="/routeWrite1")
    @ResponseBody
@@ -143,12 +128,15 @@ public class RouteController {
          }
 
          
-         
+         // 네이버 지도 API 사용을 위한 아이디, 비밀번호 
          String clientId = "i4kv2usz7y";
          String clientSecret = "nZi7a71uL5f2KAgfqK0EJp2xFOfAFuTXpBizhjph";
-         //HashMap<String, Object> map = new HashMap<String, Object>();
          
          try {
+        	// 네이버 지도 API 중 geocoding은 도로명 주소 및 지번 주소를 사용해 요청을 보내면
+        	// 해당 주소의 위도, 경도를 반환해준다.
+        	 
+        	// 요청을 보내기 위해 인코딩 
             String addr = URLEncoder.encode(address, "UTF-8");
             String apiURL = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + addr;   
             URL url = new URL(apiURL);
@@ -170,6 +158,7 @@ public class RouteController {
             }
             br.close();
             
+            // API 응답 데이터는 JSON 형식으로 온다.
             JSONTokener tokener = new JSONTokener(response.toString());
             JSONObject object = new JSONObject(tokener);
             
@@ -201,7 +190,8 @@ public class RouteController {
 
       }
       
-      try {   
+      try {
+    	 // 네이버 지도 API에서 응답한 위도, 경도를 담아줄 변수 생성
          String[] lng = new String[latlng.size()/2];
          String[] lat = new String[latlng.size()/2];
          for(int i=0; i<latlng.size()/2; i++) {
@@ -220,6 +210,8 @@ public class RouteController {
          
          String reqURL = null;
          
+         // 경유지를 표시하기 위해서는 네이버 지도 API의 direction15를 사용한다
+         // 조건문을 사용하여 출발지, 도착지만 경로로 설정한 경우의 수 부터 출발지, 도착지, 경유지1~5번까지 지정한 경우의 수를 고려하여 API에 요청
          if(lng.length == 7 && lat.length == 7) {
             reqURL = "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start="+lng[0]+','+lat[0]+"&goal="+lng[1]+','+lat[1]+"&waypoints="+lng[2]+","+lat[2]+"|"+lng[3]+","+lat[3]+"|"+lng[4]+","+lat[4]+"|"+lng[5]+","+lat[5]+"|"+lng[6]+","+lat[6]+"&option=trafast";
          }else if(lng.length == 6 && lat.length == 6) {
@@ -268,10 +260,16 @@ public class RouteController {
          
          br.close();
          
+         // 복잡한 구조로 되어있는 응답받은 API의 JSON 타입 데이터 
+         // 하나씩 천천히 파싱을 진행
          org.json.simple.JSONObject route = (org.json.simple.JSONObject) jsonObj.get("route");
          org.json.simple.JSONArray trafast_arr = (org.json.simple.JSONArray) route.get("trafast");
          org.json.simple.JSONObject trafast_obj = (org.json.simple.JSONObject) trafast_arr.get(0);
          org.json.simple.JSONArray path = (org.json.simple.JSONArray) trafast_obj.get("path");
+         // path는 무수히 많은 배열을 담고 있는 list이다.
+         // 이 데이터에 대한 설명을 위해 출발지, 도착지만 설정되었다고 가정한다.
+         // 출발지와 도착지 사이의 자동차 이용 최단 시간 경로를 찾는다.
+         // 그리고 둘 사이의 경로를 무수히 많은 위도, 경도 데이터를 반환(출발지와 도착지 사이 위도, 경도 반환)
          
          JSONArray arr = new JSONArray(path);         
          ArrayList<Object> list = new ArrayList<Object>();
