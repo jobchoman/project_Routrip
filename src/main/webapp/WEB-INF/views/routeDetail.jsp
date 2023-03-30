@@ -1,6 +1,19 @@
+<!-- 
+작성자 : 전형근(Hyeonggeun Jeon)
+작성일 : 2022년 11월 프로젝트 기간
+수정일 : 2022-12-05
+
+★☆★☆기능 소개★☆★☆ 
+1. 네이버 API(direction15)를 사용하여 작성자만의 여행 루트를 네이버 지도로 시각화
+    PolyLine으로 여행 경로 실선으로 표현 + Marker Custom 하여 출발지, 도착지, 경유지 표시
+2. 게시판 상세보기 기능(제목, 내용, 조회수, 작성일, 작성자)
+3. 별점 API 를 이용한 댓글 기능(별점 부여, 댓글작성, 댓글 리스트, 페이징 처리, 댓글 삭제)
+4. 게시글 작성자 및 운영자에 따라 수정, 삭제, 블라인드 버튼 표시
+ -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
@@ -210,42 +223,41 @@ var polypath = JSON.parse("${polypath}");
        strokeColor : '#5347AA',
        strokeWeight : 2
    });
-   
    var marker = new naver.maps.Marker({
-		   icon: {url: './resources/img/start.png', scaledSize: new naver.maps.Size(30, 45)},
-          position: polypath[0],
-          map: map
-      });
-   var marker = new naver.maps.Marker({
-	   	  icon: {url: './resources/img/finish.png', scaledSize: new naver.maps.Size(30, 35)},
-          position: polypath[polypath.length -1],
-          map: map
-      });
-   var marker = new naver.maps.Marker({
-	  	  icon: {url: './resources/img/number1.png', scaledSize: new naver.maps.Size(25, 25)},
-          position: new naver.maps.LatLng(lat[2], lng[2]),
-          map: map
-      });
-   var marker = new naver.maps.Marker({
-	      icon: {url: './resources/img/number2.png', scaledSize: new naver.maps.Size(25, 25)},
-          position: new naver.maps.LatLng(lat[3], lng[3]),
-          map: map
-      });
-   var marker = new naver.maps.Marker({
-	      icon: {url: './resources/img/number3.png', scaledSize: new naver.maps.Size(25, 25)},
-          position: new naver.maps.LatLng(lat[4], lng[4]),
-          map: map
-      });
-   var marker = new naver.maps.Marker({
-	      icon: {url: './resources/img/number4.png', scaledSize: new naver.maps.Size(25, 25)},
-          position: new naver.maps.LatLng(lat[5], lng[5]),
-          map: map
-      });
-   var marker = new naver.maps.Marker({
-	      icon: {url: './resources/img/number5.png', scaledSize: new naver.maps.Size(25, 25)},
-          position: new naver.maps.LatLng(lat[6], lng[6]),
-          map: map
-      });    
+       icon: {url: './resources/img/start.png', scaledSize: new naver.maps.Size(30, 45)},
+        position: polypath[0],
+        map: map
+    });
+	 var marker = new naver.maps.Marker({
+	         icon: {url: './resources/img/finish.png', scaledSize: new naver.maps.Size(30, 35)},
+	        position: polypath[polypath.length -1],
+	        map: map
+	    });
+	 var marker = new naver.maps.Marker({
+	        icon: {url: './resources/img/number1.png', scaledSize: new naver.maps.Size(25, 25)},
+	        position: new naver.maps.LatLng(lat[2], lng[2]),
+	        map: map
+	    });
+	 var marker = new naver.maps.Marker({
+	       icon: {url: './resources/img/number2.png', scaledSize: new naver.maps.Size(25, 25)},
+	        position: new naver.maps.LatLng(lat[3], lng[3]),
+	        map: map
+	    });
+	 var marker = new naver.maps.Marker({
+	       icon: {url: './resources/img/number3.png', scaledSize: new naver.maps.Size(25, 25)},
+	        position: new naver.maps.LatLng(lat[4], lng[4]),
+	        map: map
+	    });
+	 var marker = new naver.maps.Marker({
+	       icon: {url: './resources/img/number4.png', scaledSize: new naver.maps.Size(25, 25)},
+	        position: new naver.maps.LatLng(lat[5], lng[5]),
+	        map: map
+	    });
+	 var marker = new naver.maps.Marker({
+	       icon: {url: './resources/img/number5.png', scaledSize: new naver.maps.Size(25, 25)},
+	        position: new naver.maps.LatLng(lat[6], lng[6]),
+	        map: map
+	    });
    
 var rating1;   
 $(document).on('click','.rating', function(){
@@ -288,36 +300,7 @@ function commentListCall(showPage, board){
 function drawList(commentlist){
    var content="";
    for(var i=0;i<commentlist.length;i++){
-//       var star = "";
-//       for(var i1=0; i<${commentlist[i1].star}; i1++) {
-//          if(commentlist[i1].star<1) {
-//             star += "★";
-//          }else {
-//             star +="☆";
-//          }
-//          if(commentlist[i1].star<2) {
-//             star += "★";
-//          }else {
-//             star +="☆";
-//          }
-//          if(commentlist[i1].star<3) {
-//             star += "★";
-//          }else {
-//             star +="☆";
-//          }
-//          if(commentlist[i1].star<4) {
-//             star += "★";
-//          }else {
-//             star +="☆";
-//          }
-//          if(commentlist[i1].star<5) {
-//             star += "★";
-//          }else {
-//             star +="☆";
-//          }
-//       }
       content += "<tr class='starImg"+i+"'>";
-//       content += "<td>별점 : "+commentlist[i].star+"</td>";
       content += "<td>작성자 : "+commentlist[i].id+"</td>";
       var date = new Date(commentlist[i].comment_date);
       content += "<td>작성일 : "+date.toLocaleDateString('ko-KR')+"</td>";
